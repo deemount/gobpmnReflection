@@ -4,8 +4,8 @@ import (
 	"log"
 	"reflect"
 
-	"github.com/deemount/gobpmnBuilder/internals/utils"
-	"github.com/deemount/gobpmnBuilder/pkg/core"
+	"github.com/deemount/gobpmnReflection/internals/utils"
+	"github.com/deemount/gobpmnReflection/pkg/core"
 )
 
 // Reflect struct defines

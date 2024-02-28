@@ -8,10 +8,10 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/deemount/gobpmnBuilder/internals/utils"
-	"github.com/deemount/gobpmnBuilder/pkg/events/elements"
-	"github.com/deemount/gobpmnBuilder/pkg/pool"
 	"github.com/deemount/gobpmnModels/pkg/core"
+	"github.com/deemount/gobpmnReflection/internals/utils"
+	"github.com/deemount/gobpmnReflection/pkg/events/elements"
+	"github.com/deemount/gobpmnReflection/pkg/pool"
 )
 
 type Def core.DefinitionsRepository
