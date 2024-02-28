@@ -1,7 +1,7 @@
 package factory
 
 // NOTICE:
-// It's a first build of a library for usage in natural language processing
+// It's a first build of a library for usage in word processing
 // They may be used in some example processes, but as a whole it could be,
 // that the whole library is getting deleted or put in an other structure.
 
