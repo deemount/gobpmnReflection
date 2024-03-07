@@ -122,7 +122,7 @@ func (r *Reflection) inject(p interface{}) interface{} {
 		length := len(ref.Anonym)
 
 		// create processMap, anonymMap and hashMap
-		processMap := make(map[string]map[int][]interface{})
+		//processMap := make(map[string]map[int][]interface{})
 		anonymMap := make(map[int][]interface{}, length)
 		hashMap := make(map[string][]interface{}, length)
 
@@ -183,7 +183,7 @@ func (r *Reflection) inject(p interface{}) interface{} {
 
 			// merge the hashSlice with the hashMap and the fieldMap with the anonymMap to get the processMap
 			utils.MergeStringSliceToMap(hashMap, n.Type().Name(), hashSlice)
-			processMap[n.Type().Name()] = utils.MergeMaps(anonymMap, fieldMap)
+			//processMap[n.Type().Name()] = utils.MergeMaps(anonymMap, fieldMap)
 
 		}
 
