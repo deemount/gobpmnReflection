@@ -105,7 +105,7 @@ func (ref Reflect) builderType() {
 	count := 0
 	index := len(ref.Words)
 	for _, field := range fields {
-		if ref.isNotAnonymous(field) && ref.isNotDefinitions(field) && ref.isBpmnBuilder(field) {
+		if ref.isNotAnonymous(field) && ref.isNotDefinitions(field) && ref.isBpmnReflection(field) {
 			ref.Builder[count] = field.Name
 			ref.Words[index] = utils.Split(ref.Builder[count])
 			count++
@@ -170,6 +170,6 @@ func (ref *Reflect) isNotAnonymous(field reflect.StructField) bool {
 }
 
 // isBpmnBuilder ...
-func (ref *Reflect) isBpmnBuilder(field reflect.StructField) bool {
-	return field.Type.Name() == "Builder"
+func (ref *Reflect) isBpmnReflection(field reflect.StructField) bool {
+	return field.Type.Name() == "Reflection"
 }
