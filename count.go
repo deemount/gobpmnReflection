@@ -31,24 +31,24 @@ type Count struct {
  */
 
 // countPool ...
-func (r *Reflection) countPool(field, builderField string) {
+func (c *Count) countPool(field, reflectionField string) {
 	if strings.ToLower(field) == "pool" {
-		if strings.Contains(builderField, "Process") {
-			r.Process++
+		if strings.Contains(reflectionField, "Process") {
+			c.Process++
 		}
-		if strings.Contains(builderField, "ID") {
-			r.Participant++
-			r.Shape++
+		if strings.Contains(reflectionField, "ID") {
+			c.Participant++
+			c.Shape++
 		}
 	}
 }
 
 // countMessage ...
-func (r *Reflection) countMessage(field, builderField string) {
+func (c *Count) countMessage(field, reflectionField string) {
 	if strings.ToLower(field) == "message" {
-		if strings.Contains(builderField, "Message") {
-			r.Message++
-			r.Edge++
+		if strings.Contains(reflectionField, "Message") {
+			c.Message++
+			c.Edge++
 		}
 	}
 }
@@ -58,9 +58,9 @@ func (r *Reflection) countMessage(field, builderField string) {
  */
 
 // countProcess ...
-func (r *Reflection) countProcess(builderField string) {
-	if strings.Contains(builderField, "Process") {
-		r.Process++
+func (c *Count) countProcess(field string) {
+	if strings.Contains(field, "Process") {
+		c.Process++
 	}
 }
 
@@ -68,34 +68,34 @@ func (r *Reflection) countProcess(builderField string) {
  * @Elements
  */
 
-func (r *Reflection) countElements(builderField string) {
+func (c *Count) countElements(field string) {
 
-	if utils.After(builderField, "From") == "" {
+	if utils.After(field, "From") == "" {
 
 		switch true {
-		case strings.Contains(builderField, "StartEvent"):
-			r.StartEvent++
-		case strings.Contains(builderField, "EndEvent"):
-			r.EndEvent++
-		case strings.Contains(builderField, "BusinessRuleTask"):
-			r.BusinessRuleTask++
-		case strings.Contains(builderField, "ManualTask"):
-			r.ManualTask++
-		case strings.Contains(builderField, "ReceiveTask"):
-			r.ReceiveTask++
-		case strings.Contains(builderField, "ScriptTask"):
-			r.ScriptTask++
-		case strings.Contains(builderField, "SendTask"):
-			r.SendTask++
-		case strings.Contains(builderField, "ServiceTask"):
-			r.ServiceTask++
-		case strings.Contains(builderField, "Task"):
-			r.Task++
-		case strings.Contains(builderField, "UserTask"):
-			r.UserTask++
+		case strings.Contains(field, "StartEvent"):
+			c.StartEvent++
+		case strings.Contains(field, "EndEvent"):
+			c.EndEvent++
+		case strings.Contains(field, "BusinessRuleTask"):
+			c.BusinessRuleTask++
+		case strings.Contains(field, "ManualTask"):
+			c.ManualTask++
+		case strings.Contains(field, "ReceiveTask"):
+			c.ReceiveTask++
+		case strings.Contains(field, "ScriptTask"):
+			c.ScriptTask++
+		case strings.Contains(field, "SendTask"):
+			c.SendTask++
+		case strings.Contains(field, "ServiceTask"):
+			c.ServiceTask++
+		case strings.Contains(field, "Task"):
+			c.Task++
+		case strings.Contains(field, "UserTask"):
+			c.UserTask++
 		}
 
-		r.Shape++
+		c.Shape++
 
 	}
 }

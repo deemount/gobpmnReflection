@@ -1,7 +1,6 @@
 package gobpmn_reflection
 
 import (
-	"log"
 	"reflect"
 	"strings"
 
@@ -62,7 +61,7 @@ func (ref *Reflect) InitMaps() *Reflect {
 // reflect fields of interface {}
 func (ref *Reflect) Reflection() {
 	ref.anonymousFields()
-	ref.builderType()
+	ref.reflectionType()
 	ref.boolType()
 }
 
@@ -78,43 +77,38 @@ func (ref *Reflect) Set() any {
 	return ref.Element.Interface()
 }
 
+/*
+ * @private
+ */
+
 // anonymousFields takes all compounds which are anonymous
 func (ref *Reflect) anonymousFields() {
 
 	fields := reflect.VisibleFields(reflect.TypeOf(ref.IF))
-	i := 0
+	index := 0
 	for _, field := range fields {
-		if ref.isAnonymous(field) {
-			ref.Anonym[i] = field.Name
-			ref.Words[i] = utils.Split(ref.Anonym[i])
-			i++
+		if field.Anonymous {
+			ref.Anonym[index] = field.Name
+			ref.Words[index] = utils.Split(ref.Anonym[index])
+			index++
 		}
-	}
-	if i == 0 {
-		log.Println("reflect.anonymousFields: main struct contains map of zero anonymous fields")
 	}
 
 }
 
-// builderType with three static filter options
-
-func (ref Reflect) builderType() {
+// reflectionType with three static filter options
+func (ref Reflect) reflectionType() {
 
 	fields := reflect.VisibleFields(reflect.TypeOf(ref.IF))
-	log.Printf("reflect.builderType: fields %+v", fields)
 	count := 0
 	index := len(ref.Words)
 	for _, field := range fields {
-		if ref.isNotAnonymous(field) && ref.isNotDefinitions(field) && ref.isBpmnReflection(field) {
+		if !field.Anonymous && ref.isNotDefinitions(field) && field.Type.Name() == "Reflection" {
 			ref.Builder[count] = field.Name
 			ref.Words[index] = utils.Split(ref.Builder[count])
 			count++
 			index++
 		}
-	}
-	log.Printf("reflect.builderType: count %d", count)
-	if count == 0 {
-		log.Println("reflect.builderType: main struct contains map of zero builder fields")
 	}
 
 }
@@ -125,7 +119,6 @@ func (ref Reflect) builderType() {
 func (ref Reflect) boolType() {
 
 	fields := reflect.VisibleFields(reflect.TypeOf(ref.IF))
-	log.Printf("reflect.boolType: fields %+v", fields)
 	count := 0
 	index := len(ref.Words)
 	for _, field := range fields {
@@ -139,16 +132,6 @@ func (ref Reflect) boolType() {
 
 }
 
-// countWords ...
-func (ref Reflect) countWords() {
-	l := 0
-	length := len(ref.Words)
-	for i := 0; i < length; i++ {
-		l += len(ref.Words[i])
-	}
-	log.Printf("reflect.countWords: %v", l)
-}
-
 // isDefinitions ...
 func (ref *Reflect) isDefinitions(field reflect.StructField) bool {
 	return strings.ToLower(field.Name) == "def" || strings.ToLower(field.Name) == "definitions"
@@ -157,19 +140,4 @@ func (ref *Reflect) isDefinitions(field reflect.StructField) bool {
 // isNotDefinitions ...
 func (ref *Reflect) isNotDefinitions(field reflect.StructField) bool {
 	return strings.ToLower(field.Name) != "def" && strings.ToLower(field.Name) != "definitions"
-}
-
-// isAnonymous ...
-func (ref *Reflect) isAnonymous(field reflect.StructField) bool {
-	return field.Anonymous
-}
-
-// isNotAnonymous ...
-func (ref *Reflect) isNotAnonymous(field reflect.StructField) bool {
-	return !field.Anonymous
-}
-
-// isBpmnBuilder ...
-func (ref *Reflect) isBpmnReflection(field reflect.StructField) bool {
-	return field.Type.Name() == "Reflection"
 }

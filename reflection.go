@@ -18,7 +18,6 @@ type Def core.DefinitionsRepository
 // Reflection ...
 type Reflection struct {
 	Reflect
-	Count
 	Map       map[string][]interface{}
 	Suffix    string
 	HashTable []string
@@ -52,37 +51,8 @@ func (r *Reflection) Create(p interface{}) { r.create(p) }
 
 // hash generates a hash value by using the crypto/rand package
 // and the hash/fnv package to generate a 32-bit FNV-1a hash.
-// It returns a Builder with a hash value and an error.
 // If the error is not nil, it means that the hash value could not be generated.
-// The hash value is a string of 32 hexadecimal characters.
-// The hash value is used to generate a unique suffix for each process.
 // The suffix is used to generate a unique ID for each element of a process.
-// These elements are:
-// - sub process
-// - message flow
-// - sequence flow
-// - data object
-// - data store
-// - group
-// - participant
-// - lane
-// - text annotation
-// - association
-// - process
-// - start event
-// - end event
-// - intermediate catch event
-// - intermediate throw event
-// - boundary event
-// - task
-// - service task
-// - user task
-// - manual task
-// - script task
-// - business rule task
-// - receive task
-// - send task
-// - call activity.
 func (r Reflection) hash() (Reflection, error) {
 
 	n := 8
@@ -113,6 +83,8 @@ func (r Reflection) hash() (Reflection, error) {
 // how much elements of each package needs to be mapped later then.
 func (r *Reflection) inject(p interface{}) interface{} {
 
+	c := Count{}
+
 	ref := NewReflect(p)
 	ref.Interface().New().InitMaps().Reflection()
 
@@ -121,8 +93,7 @@ func (r *Reflection) inject(p interface{}) interface{} {
 
 		length := len(ref.Anonym)
 
-		// create processMap, anonymMap and hashMap
-		//processMap := make(map[string]map[int][]interface{})
+		// create anonymMap and hashMap
 		anonymMap := make(map[int][]interface{}, length)
 		hashMap := make(map[string][]interface{}, length)
 
@@ -153,7 +124,7 @@ func (r *Reflection) inject(p interface{}) interface{} {
 				// kind is a bool
 				case reflect.Bool:
 
-					// only the first field, which IsExecutable is set to true,
+					// only the first field, which IsExecutable, is set to true.
 					// means, only one process in a collaboration can be executed at runtime
 					// this can be changed in the future, if the engine fits for more execution
 					// options
@@ -167,9 +138,9 @@ func (r *Reflection) inject(p interface{}) interface{} {
 				// kind is a struct
 				case reflect.Struct:
 
-					r.countPool(field, name)    // counts processes, participants and their shapes
-					r.countMessage(field, name) // counts message flows and their edges
-					r.countElements(name)       // counts elements
+					c.countPool(field, name)    // counts processes, participants and their shapes
+					c.countMessage(field, name) // counts message flows and their edges
+					c.countElements(name)       // counts elements
 
 					// if the field Suffix is empty, generate hash value and
 					// start to inject by each index of the given structs. Then,
@@ -181,9 +152,8 @@ func (r *Reflection) inject(p interface{}) interface{} {
 
 			}
 
-			// merge the hashSlice with the hashMap and the fieldMap with the anonymMap to get the processMap
+			// merge the hashSlice with the hashMap
 			utils.MergeStringSliceToMap(hashMap, n.Type().Name(), hashSlice)
-			//processMap[n.Type().Name()] = utils.MergeMaps(anonymMap, fieldMap)
 
 		}
 
@@ -198,8 +168,8 @@ func (r *Reflection) inject(p interface{}) interface{} {
 			// get the reflected name of builderField
 			nonAnonymBuilderField := ref.Temporary.FieldByName(builderField)
 
-			r.countProcess(builderField)  // count processes
-			r.countElements(builderField) // counts elements
+			c.countProcess(builderField)  // count processes
+			c.countElements(builderField) // counts elements
 
 			hash, _ := r.hash()                              // generate hash value
 			nonAnonymBuilderField.Set(reflect.ValueOf(hash)) // inject the field
@@ -220,7 +190,8 @@ func (r *Reflection) inject(p interface{}) interface{} {
 	}
 
 	p = ref.Set()
-	ref.countWords()
+
+	utils.MergeStructs(p, &c)
 
 	return p
 
@@ -264,7 +235,7 @@ func (r *Reflection) create(p interface{}) {
 	collaboration.Call([]reflect.Value{})
 
 	process := definitions.MethodByName("SetProcess")
-	process.Call([]reflect.Value{reflect.ValueOf(r.Process)}) // r.Process represents number of processes
+	process.Call([]reflect.Value{reflect.ValueOf(2)}) // r.Process represents number of processes
 
 	diagram := definitions.MethodByName("SetDiagram")
 	diagram.Call([]reflect.Value{reflect.ValueOf(1)}) // 1 represents number of diagrams

@@ -1,15 +1,6 @@
 package utils
 
-// MergeMaps ...
-func MergeMaps[M ~map[K]V, K comparable, V any](src ...M) M {
-	merged := make(M)
-	for _, m := range src {
-		for k, v := range m {
-			merged[k] = v
-		}
-	}
-	return merged
-}
+import "reflect"
 
 // MergeStringSliceToMap ...
 func MergeStringSliceToMap(m map[string][]interface{}, k string, v []interface{}) {
@@ -20,5 +11,19 @@ func MergeStringSliceToMap(m map[string][]interface{}, k string, v []interface{}
 		}
 	} else {
 		m[k] = append(m[k], v...)
+	}
+}
+
+func MergeStructs(dst, src interface{}) {
+	dstVal := reflect.ValueOf(dst).Elem()
+	srcVal := reflect.ValueOf(src).Elem()
+
+	for i := 0; i < srcVal.NumField(); i++ {
+		srcField := srcVal.Field(i)
+		dstField := dstVal.FieldByName(srcVal.Type().Field(i).Name)
+
+		if dstField.IsValid() && dstField.CanSet() {
+			dstField.Set(srcField)
+		}
 	}
 }
