@@ -17,7 +17,7 @@ type Def core.DefinitionsRepository
 
 // Reflection ...
 type Reflection struct {
-	Reflect
+	//Reflect
 	Map       map[string][]interface{}
 	Suffix    string
 	HashTable []string
@@ -190,8 +190,8 @@ func (r *Reflection) inject(p interface{}) interface{} {
 	}
 
 	p = ref.Set()
-
-	utils.MergeStructs(p, &c)
+	log.Printf("Count: %+v", c)
+	//utils.MergeStructs(c, &p)
 
 	return p
 
