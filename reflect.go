@@ -3,21 +3,13 @@ package gobpmn_reflection
 import (
 	"reflect"
 	"strings"
-
-	"github.com/deemount/gobpmnReflection/internals/utils"
 )
-
-// Maps ...
-type Maps struct {
-	Anonym  map[int]string
-	Config  map[int]string
-	Builder map[int]string
-	Words   map[int][]string
-}
 
 // Reflect ...
 type Reflect struct {
-	Maps
+	Anonym    map[int]string
+	Config    map[int]string
+	Rflct     map[int]string
 	IF        interface{}
 	Temporary reflect.Value
 	Element   reflect.Value
@@ -34,9 +26,9 @@ func (ref *Reflect) Interface() *Reflect {
 	return ref
 }
 
-// New allocates a temporary variable with type of the struct.
+// Allocate allocates a temporary variable with type of the struct.
 // ref.Element.Elem() is the value contained in the interface
-func (ref *Reflect) New() *Reflect {
+func (ref *Reflect) Allocate() *Reflect {
 	ref.Temporary = reflect.New(ref.Element.Elem().Type()).Elem()
 	ref.Temporary.Set(ref.Element.Elem())
 	return ref
@@ -47,26 +39,20 @@ Maps initializes maps to analyze then later
 
   - anonym: all anonymous fields
   - config: all boolean fields
-  - builder: all builder fields
-  - words: all collected words splitted
+  - rflct:  all reflection fields
 */
-func (ref *Reflect) InitMaps() *Reflect {
+func (ref *Reflect) Maps() *Reflect {
 	ref.Anonym = make(map[int]string)
 	ref.Config = make(map[int]string)
-	ref.Builder = make(map[int]string)
-	ref.Words = make(map[int][]string)
+	ref.Rflct = make(map[int]string)
 	return ref
 }
 
-// reflect fields of interface {}
-func (ref *Reflect) Reflection() {
+// Reflection holds the methods to reflect fields of interface {}
+func (ref *Reflect) Call() {
 	ref.anonymousFields()
 	ref.reflectionType()
 	ref.boolType()
-}
-
-func (ref *Reflect) Methods() {
-	reflect.TypeOf(ref.IF).NumMethod()
 }
 
 // Set temporary variable values to interface {}
@@ -89,7 +75,6 @@ func (ref *Reflect) anonymousFields() {
 	for _, field := range fields {
 		if field.Anonymous {
 			ref.Anonym[index] = field.Name
-			ref.Words[index] = utils.Split(ref.Anonym[index])
 			index++
 		}
 	}
@@ -101,13 +86,10 @@ func (ref Reflect) reflectionType() {
 
 	fields := reflect.VisibleFields(reflect.TypeOf(ref.IF))
 	count := 0
-	index := len(ref.Words)
 	for _, field := range fields {
 		if !field.Anonymous && ref.isNotDefinitions(field) && field.Type.Name() == "Reflection" {
-			ref.Builder[count] = field.Name
-			ref.Words[index] = utils.Split(ref.Builder[count])
+			ref.Rflct[count] = field.Name
 			count++
-			index++
 		}
 	}
 
@@ -120,13 +102,10 @@ func (ref Reflect) boolType() {
 
 	fields := reflect.VisibleFields(reflect.TypeOf(ref.IF))
 	count := 0
-	index := len(ref.Words)
 	for _, field := range fields {
 		if field.Type.Kind() == reflect.Bool {
 			ref.Config[count] = field.Name
-			ref.Words[index] = utils.Split(ref.Config[count])
 			count++
-			index++
 		}
 	}
 
