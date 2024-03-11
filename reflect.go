@@ -15,8 +15,8 @@ type Reflect struct {
 	Element   reflect.Value
 }
 
-// NewReflect initialize interface {} p
-func NewReflect(p interface{}) *Reflect {
+// New initialize interface {} p
+func New(p interface{}) *Reflect {
 	return &Reflect{IF: p}
 }
 
@@ -48,8 +48,8 @@ func (ref *Reflect) Maps() *Reflect {
 	return ref
 }
 
-// Reflection holds the methods to reflect fields of interface {}
-func (ref *Reflect) Call() {
+// Assign holds the methods to reflect fields of interface {}
+func (ref *Reflect) Assign() {
 	ref.anonymousFields()
 	ref.reflectionType()
 	ref.boolType()
@@ -85,11 +85,11 @@ func (ref *Reflect) anonymousFields() {
 func (ref Reflect) reflectionType() {
 
 	fields := reflect.VisibleFields(reflect.TypeOf(ref.IF))
-	count := 0
+	index := 0
 	for _, field := range fields {
 		if !field.Anonymous && ref.isNotDefinitions(field) && field.Type.Name() == "Reflection" {
-			ref.Rflct[count] = field.Name
-			count++
+			ref.Rflct[index] = field.Name
+			index++
 		}
 	}
 
@@ -101,11 +101,11 @@ func (ref Reflect) reflectionType() {
 func (ref Reflect) boolType() {
 
 	fields := reflect.VisibleFields(reflect.TypeOf(ref.IF))
-	count := 0
+	index := 0
 	for _, field := range fields {
 		if field.Type.Kind() == reflect.Bool {
-			ref.Config[count] = field.Name
-			count++
+			ref.Config[index] = field.Name
+			index++
 		}
 	}
 
