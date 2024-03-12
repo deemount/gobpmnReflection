@@ -87,7 +87,7 @@ func (ref Reflect) reflectionType() {
 	fields := reflect.VisibleFields(reflect.TypeOf(ref.IF))
 	index := 0
 	for _, field := range fields {
-		if !field.Anonymous && ref.isNotDefinitions(field) && field.Type.Name() == "Reflection" {
+		if !field.Anonymous && ref.isNotDefinitions(field) && field.Type.Name() == "Injection" {
 			ref.Rflct[index] = field.Name
 			index++
 		}
@@ -118,5 +118,5 @@ func (ref *Reflect) isDefinitions(field reflect.StructField) bool {
 
 // isNotDefinitions ...
 func (ref *Reflect) isNotDefinitions(field reflect.StructField) bool {
-	return strings.ToLower(field.Name) != "def" && strings.ToLower(field.Name) != "definitions"
+	return strings.ToLower(field.Name) != "def" || strings.ToLower(field.Name) != "definitions"
 }
