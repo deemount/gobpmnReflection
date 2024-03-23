@@ -63,6 +63,44 @@ func (ref *Reflect) Set() any {
 	return ref.Element.Interface()
 }
 
+// Defaults receives the definitions repository by the app in p argument
+// and calls the main elements to set the maps, including process parameters
+// n of process. The method contains the reflected process definition (p interface{})
+// and calls it by the reflected method name.
+// Note: This method hides specific setters (SetProcess, SetCollaboration, SetDiagram).
+func (ref *Reflect) Defaults(p interface{}, opts ...Option) {
+
+	// el is the interface {} of a given definition
+	el := reflect.ValueOf(&p).Elem()
+	//counter := reflect.ValueOf(&c).Elem()
+
+	// Get the number of processes
+	//numParticipants := counter.Elem().FieldByName("Participant").Int()
+	//numProcess := counter.Elem().FieldByName("Process").Int()
+
+	// Allocate a temporary variable with type of the struct.
+	// el.Elem() is the value contained in the interface
+	definitions := reflect.New(el.Elem().Type()).Elem() // *core.Definitions
+	definitions.Set(el.Elem())                          // reflected process definitions el will be assigned to the core definitions
+
+	//if numParticipants > 0 {
+	collaboration := definitions.MethodByName("SetCollaboration")
+	collaboration.Call([]reflect.Value{})
+	//}
+
+	//if numProcess > 0 {
+	process := definitions.MethodByName("SetProcess")
+	process.Call([]reflect.Value{reflect.ValueOf(1)}) // int(numProcess)
+	//}
+
+	/*
+		Actually, diagram is decoupled. So, no func needs to be called here ...
+
+		diagram := definitions.MethodByName("SetDiagram")
+		diagram.Call([]reflect.Value{reflect.ValueOf(1)}) // 1 represents number of diagrams
+	*/
+}
+
 /*
  * @private
  */
